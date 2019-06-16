@@ -81,7 +81,7 @@ class Welcome(tk.Frame):
             messagebox.showinfo(
                 "Info", f"{inserted} rows inserted, {duplicates} duplicates")
 
-            # self.parent.next_frame()
+            self.parent.next_frame()
 
         except TypeError:
             messagebox.showerror("Error", "Please choose a valid CSV file")

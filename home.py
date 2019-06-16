@@ -8,6 +8,8 @@ import sqlite3
 from meta import Table
 
 item = Table("item")
+beneficiery = Table("beneficiery")
+item.init_table(["id", "name", "type", ])
 
 
 class Home:
@@ -53,6 +55,41 @@ class Home:
         self.notebook.configure(takefocus="")
 
         self.init_item_tree()
+        self.init_benef_tree()
+
+    def init_benef_tree(self):
+        self.benef_frame = tk.Frame(self.notebook)
+        self.notebook.add(self.benef_frame, padding=3)
+        self.notebook.tab(1, text="Beneficiery",
+                          compound="left", underline="-1",)
+
+        columns = beneficiery._get_column_names()
+        columns = [col.upper() for col in columns]
+
+        self.benef_tree = ScrolledTreeView(self.benef_frame)
+        self.benef_tree.place(
+            relx=0, rely=0.05, relheight=0.946, relwidth=1)
+        self.benef_tree.configure(columns=columns)
+        self.benef_tree.configure(show="headings")
+
+        for i, column in enumerate(columns):
+
+            self.benef_tree.heading(f"{i}", text=column, anchor="center")
+            self.benef_tree.column(f"{i}", width="200")
+            self.benef_tree.column(f"{i}", minwidth="20")
+            self.benef_tree.column(f"{i}", stretch="1")
+            self.benef_tree.column(f"{i}", anchor="w")
+
+        self._show_benef()
+
+    def _show_benef(self):
+        data = beneficiery.find_by_id()
+
+        for row in data:
+            try:
+                self.benef_tree.insert('', 'end', row[0], values=tuple(row))
+            except tk.TclError:
+                pass
 
     def init_item_tree(self):
 
@@ -66,42 +103,24 @@ class Home:
         self.notebook.add(self.item_frame, padding=3)
         self.notebook.tab(0, text="Item", compound="left", underline="-1",)
 
-        self.benef_frame = tk.Frame(self.notebook)
-        self.notebook.add(self.benef_frame, padding=3)
-        self.notebook.tab(1, text="Beneficiery",
-                          compound="left", underline="-1",)
-
         self.style.configure('Treeview.Heading',  font="TkDefaultFont")
 
         self.item_tree = ScrolledTreeView(self.item_frame)
         self.item_tree.place(
             relx=0.252, rely=0.03, relheight=0.946, relwidth=0.723)
-        self.item_tree.configure(columns="Color size shape item")
+
+        columns = item._get_column_names()
+        columns = map(str.upper, columns)
+
+        self.item_tree.configure(columns=columns)
         self.item_tree.configure(show="headings")
 
-        self.item_tree.heading("#1", text="Item ID", anchor="center")
-        self.item_tree.column("#1", width="200")
-        self.item_tree.column("#1", minwidth="20")
-        self.item_tree.column("#1", stretch="1")
-        self.item_tree.column("#1", anchor="w")
-
-        self.item_tree.heading("#4", text="Quantity", anchor="center")
-        self.item_tree.column("#4", width="200")
-        self.item_tree.column("#4", minwidth="20")
-        self.item_tree.column("#4", stretch="1")
-        self.item_tree.column("#4", anchor="w")
-
-        self.item_tree.heading("#2", text="Name", anchor="center")
-        self.item_tree.column("#2", width="200")
-        self.item_tree.column("#2", minwidth="20")
-        self.item_tree.column("#2", stretch="1")
-        self.item_tree.column("#2", anchor="w")
-
-        self.item_tree.heading("#3", text="Type", anchor="center")
-        self.item_tree.column("#3", width="200")
-        self.item_tree.column("#3", minwidth="20")
-        self.item_tree.column("#3", stretch="1")
-        self.item_tree.column("#3", anchor="w")
+        for i, column in enumerate(columns):
+            self.item_tree.heading(f"#{i+1}", text=column, anchor="center")
+            self.item_tree.column(f"#{i+1}", width="200")
+            self.item_tree.column(f"#{i+1}", minwidth="20")
+            self.item_tree.column(f"#{i+1}", stretch="1")
+            self.item_tree.column(f"#{i+1}", anchor="w")
 
         self.side_panel = ttk.LabelFrame(self.item_frame)
         self.side_panel.place(relx=0.002, rely=0.0173,

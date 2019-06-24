@@ -1,15 +1,13 @@
+import sys
+import sqlite3
+from datetime import datetime
+
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-import platform
-import sys
-import sqlite3
-
-from meta import Table
-
-item = Table("item")
-beneficiery = Table("beneficiery")
-item.init_table(["id", "name", "type", ])
+from db import item, beneficiery, distribution, distributed
+from gui_utils import *
+from item_select import SelectItem
 
 
 class Home:
@@ -17,35 +15,27 @@ class Home:
 
         self.parent = parent
 
-        _bgcolor = '#d9d9d9'
-        _fgcolor = '#000000'
-        _compcolor = '#d9d9d9'
-        _ana1color = '#d9d9d9'
-        _ana2color = '#ececec'
-        font9 = "-family {DejaVu Sans} -size 10 -weight normal -slant "  \
-            "roman -underline 0 -overstrike 0"
-
         self.style = ttk.Style()
 
         if sys.platform == "win32":
             self.style.theme_use('winnative')
 
-        self.style.configure('.', background=_bgcolor)
-        self.style.configure('.', foreground=_fgcolor)
+        self.style.configure('.', background=bgcolor)
+        self.style.configure('.', foreground=fgcolor)
         self.style.configure('.', font="TkDefaultFont")
         self.style.map('.', background=[
-                       ('selected', _compcolor), ('active', _ana2color)])
+                       ('selected', compcolor), ('active', ana2color)])
 
         self.parent.geometry("1215x725")
 
         self.menubar = tk.Menu(self.parent, font=(
-            'DejaVu Sans', 10, ), bg=_bgcolor, fg=_fgcolor)
+            'DejaVu Sans', 10, ), bg=bgcolor, fg=fgcolor)
         self.parent.configure(menu=self.menubar)
 
-        self.style.configure('TNotebook.Tab', background=_bgcolor)
-        self.style.configure('TNotebook.Tab', foreground=_fgcolor)
+        self.style.configure('TNotebook.Tab', background=bgcolor)
+        self.style.configure('TNotebook.Tab', foreground=fgcolor)
         self.style.map('TNotebook.Tab', background=[
-                       ('selected', _compcolor), ('active', _ana2color)])
+                       ('selected', compcolor), ('active', ana2color)])
 
         self.notebook = ttk.Notebook(self.parent)
         self.notebook.place(relx=0.008, rely=0.014,
@@ -56,6 +46,17 @@ class Home:
 
         self.init_item_tree()
         self.init_benef_tree()
+        self.init_select_item_tree()
+        self.init_distribution_tree()
+        self.init_benef_dist_tree()
+
+    def init_select_item_tree(self):
+        self.select_item_frame = tk.Frame(self.notebook)
+        self.notebook.add(self.select_item_frame, padding=3)
+        self.notebook.tab(2, text="select item",
+                          compound="left", underline="-1",)
+
+        self.select_item_ref = SelectItem(self.select_item_frame)
 
     def init_benef_tree(self):
         self.benef_frame = tk.Frame(self.notebook)
@@ -73,7 +74,6 @@ class Home:
         self.benef_tree.configure(show="headings")
 
         for i, column in enumerate(columns):
-
             self.benef_tree.heading(f"{i}", text=column, anchor="center")
             self.benef_tree.column(f"{i}", width="200")
             self.benef_tree.column(f"{i}", minwidth="20")
@@ -81,6 +81,77 @@ class Home:
             self.benef_tree.column(f"{i}", anchor="w")
 
         self._show_benef()
+
+    def init_distribution_tree(self):
+        self.dist_frame = tk.Frame(self.notebook)
+        self.notebook.add(self.dist_frame, padding=3)
+        self.notebook.tab(3, text="distributions",
+                          compound="left", underline="-1",)
+
+        self.dist_tree = ScrolledTreeView(self.dist_frame)
+        self.dist_tree.place(
+            relx=0, rely=0.05, relheight=0.946, relwidth=1)
+        columns = distribution._get_column_names()
+
+        self.dist_tree.configure(columns=columns)
+        self.dist_tree.configure(show="headings")
+
+        for i, column in enumerate(columns):
+            self.dist_tree.heading(f"{i}", text=column, anchor="center")
+            self.dist_tree.column(f"{i}", width="200")
+            self.dist_tree.column(f"{i}", minwidth="20")
+            self.dist_tree.column(f"{i}", stretch="1")
+            self.dist_tree.column(f"{i}", anchor="w")
+
+        self._show_dist()
+
+    def _show_dist(self):
+        data = distribution.find_by_id()
+
+        for row in data:
+            row = list(row)
+            # format timestamp to date time
+            row[2] = datetime.fromtimestamp(int(row[2]))
+
+            try:
+                self.dist_tree.insert('', 'end', row[0], values=tuple(row))
+            except tk.TclError:
+                pass
+
+    def init_benef_dist_tree(self):
+        self.benef_dist_frame = tk.Frame(self.notebook)
+        self.notebook.add(self.benef_dist_frame, padding=3)
+        self.notebook.tab(4, text="history",
+                          compound="left", underline="-1",)
+
+        self.benef_dist_tree = ScrolledTreeView(self.benef_dist_frame)
+        self.benef_dist_tree.place(
+            relx=0, rely=0.05, relheight=0.946, relwidth=1)
+        columns = distributed._get_column_names()
+
+        self.benef_dist_tree.configure(columns=columns)
+        self.benef_dist_tree.configure(show="headings")
+
+        for i, column in enumerate(columns):
+            self.benef_dist_tree.heading(f"{i}", text=column, anchor="center")
+            self.benef_dist_tree.column(f"{i}", width="200")
+            self.benef_dist_tree.column(f"{i}", minwidth="20")
+            self.benef_dist_tree.column(f"{i}", stretch="1")
+            self.benef_dist_tree.column(f"{i}", anchor="w")
+
+        self._show_benef_history()
+
+    def _show_benef_history(self):
+        data = distributed.find_by_id()
+
+        for i, row in enumerate(data):
+            row = list(row)
+            row[3] = datetime.fromtimestamp(int(row[3]))
+            try:
+                self.benef_dist_tree.insert(
+                    '', 'end', i, values=tuple(row))
+            except tk.TclError:
+                pass
 
     def _show_benef(self):
         data = beneficiery.find_by_id()
@@ -224,6 +295,10 @@ class Home:
 
         item.delete_by_id(item_id)
 
+        self.__update()
+
+    def __update(self):
+        self.select_item_ref._show_items()
         self.item_tree.delete(*self.item_tree.get_children())
         self._show_items()
 
@@ -245,136 +320,8 @@ class Home:
             row["quantity"] = self.var_quantity.get()
 
             item.insert_row(row)
-
             messagebox.showinfo("Info", "Inserted element")
+            self.__update()
 
-            self.item_tree.delete(*self.item_tree.get_children())
-            self._show_items()
-
-
-class AutoScroll(object):
-    '''Configure the scrollbars for a widget.'''
-
-    def __init__(self, master):
-        #  Rozen. Added the try-except clauses so that this class
-        #  could be used for scrolled entry widget for which vertical
-        #  scrolling is not supported.
-
-        try:
-            vsb = ttk.Scrollbar(master, orient='vertical', command=self.yview)
-        except:
-            pass
-        hsb = ttk.Scrollbar(master, orient='horizontal', command=self.xview)
-
-        try:
-            self.configure(yscrollcommand=self._autoscroll(vsb))
-        except:
-            pass
-        self.configure(xscrollcommand=self._autoscroll(hsb))
-
-        self.grid(column=0, row=0, sticky='nsew')
-        try:
-            vsb.grid(column=1, row=0, sticky='ns')
-        except:
-            pass
-        hsb.grid(column=0, row=1, sticky='ew')
-
-        master.grid_columnconfigure(0, weight=1)
-        master.grid_rowconfigure(0, weight=1)
-
-        methods = tk.Pack.__dict__.keys() | tk.Grid.__dict__.keys() \
-            | tk.Place.__dict__.keys()
-
-        for meth in methods:
-            if meth[0] != '_' and meth not in ('config', 'configure'):
-                setattr(self, meth, getattr(master, meth))
-
-    @staticmethod
-    def _autoscroll(sbar):
-        '''Hide and show scrollbar as needed.'''
-
-        def wrapped(first, last):
-            first, last = float(first), float(last)
-            if first <= 0 and last >= 1:
-                sbar.grid_remove()
-            else:
-                sbar.grid()
-            sbar.set(first, last)
-        return wrapped
-
-    def __str__(self):
-        return str(self.master)
-
-
-def _create_container(func):
-    '''Creates a ttk Frame with a given master, and use this new frame to
-    place the scrollbars and the widget.'''
-
-    def wrapped(cls, master, **kw):
-        container = ttk.Frame(master)
-        container.bind('<Enter>', lambda e: _bound_to_mousewheel(e, container))
-        container.bind(
-            '<Leave>', lambda e: _unbound_to_mousewheel(e, container))
-        return func(cls, container, **kw)
-    return wrapped
-
-
-class ScrolledTreeView(AutoScroll, ttk.Treeview):
-    '''A standard ttk Treeview widget with scrollbars that will
-    automatically show/hide as needed.'''
-
-    @_create_container
-    def __init__(self, master, **kw):
-        ttk.Treeview.__init__(self, master, **kw)
-        AutoScroll.__init__(self, master)
-
-
-def _bound_to_mousewheel(event, widget):
-
-    child = widget.winfo_children()[0]
-    if platform.system() == 'Windows' or platform.system() == 'Darwin':
-        child.bind_all('<MouseWheel>', lambda e: _on_mousewheel(e, child))
-        child.bind_all('<Shift-MouseWheel>',
-                       lambda e: _on_shiftmouse(e, child))
-    else:
-        child.bind_all('<Button-4>', lambda e: _on_mousewheel(e, child))
-        child.bind_all('<Button-5>', lambda e: _on_mousewheel(e, child))
-        child.bind_all('<Shift-Button-4>', lambda e: _on_shiftmouse(e, child))
-        child.bind_all('<Shift-Button-5>', lambda e: _on_shiftmouse(e, child))
-
-
-def _unbound_to_mousewheel(event, widget):
-
-    if platform.system() == 'Windows' or platform.system() == 'Darwin':
-        widget.unbind_all('<MouseWheel>')
-        widget.unbind_all('<Shift-MouseWheel>')
-    else:
-        widget.unbind_all('<Button-4>')
-        widget.unbind_all('<Button-5>')
-        widget.unbind_all('<Shift-Button-4>')
-        widget.unbind_all('<Shift-Button-5>')
-
-
-def _on_mousewheel(event, widget):
-
-    if platform.system() == 'Windows':
-        widget.yview_scroll(-1*int(event.delta/120), 'units')
-    elif platform.system() == 'Darwin':
-        widget.yview_scroll(-1*int(event.delta), 'units')
-    else:
-        if event.num == 4:
-            widget.yview_scroll(-1, 'units')
-        elif event.num == 5:
-            widget.yview_scroll(1, 'units')
-
-
-def _on_shiftmouse(event, widget):
-    if platform.system() == 'Windows':
-        widget.xview_scroll(-1*int(event.delta/120), 'units')
-    elif platform.system() == 'Darwin':
-        widget.xview_scroll(-1*int(event.delta), 'units')
-    else:
-        if event.num == 4:
-            widget.xview_scroll(-1, 'units')
-        elif event.num == 5:
-            widget.xview_scroll(1, 'units')
+    def destroy(self):
+        self.notebook.destroy()

@@ -28,9 +28,12 @@ class Main(tk.Tk):
         self.current_frame = Welcome(self)
         self.update()
 
-    def next_frame(self):
+    def next_frame(self, frame=None, *args, **kwargs):
         self.current_frame.destroy()
-        self.current_frame = Home(self)
+        if frame is None:
+            self.current_frame = Home(self)
+        else:
+            self.current_frame = frame(self, *args, **kwargs)
 
     def destroy(self):
         # commits changes to database before quitting
@@ -42,3 +45,8 @@ class Main(tk.Tk):
 if __name__ == "__main__":
     window = Main()
     window.mainloop()
+
+
+# TODO:
+#       Thumbnails if links available in csv
+#

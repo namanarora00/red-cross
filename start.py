@@ -6,7 +6,7 @@ from utils import read_csv
 from meta import Table
 
 
-beneficiery = Table("beneficiery")
+from db import beneficiery
 
 
 class Welcome(tk.Frame):

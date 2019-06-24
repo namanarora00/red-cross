@@ -42,16 +42,17 @@ class Table():
         self.commit()
         print("Table created!")
 
-    def insert_row(self, row: dict) -> bool:
+    def insert_row(self, row: dict, force=False) -> bool:
 
         id_ = row.get("id", None)
 
         if id_ is None:
             raise AttributeError("ID field is")
 
-        if self.find_by_id(id_):
-            print("found")
-            return False
+        if not force:
+            if self.find_by_id(id_):
+                print("found")
+                return False
 
         statement = f'''INSERT INTO {self.table_name}('''
 
@@ -129,16 +130,23 @@ class Table():
 
         return d
 
+    def execute(self, statement: str):
+        cursor = self.conn.cursor()
+        cursor.execute(statement)
+
+        self.commit()
+
+        if "SELECT" in statement.upper():
+            return cursor.fetchall()
+
     def add_columns(self, columns) -> None:
         columns = ["{} TEXT".format(col) for col in columns]
 
-        statement = '''ALTER TABLE {} ADD COLUMN '''.format(
-            self.table_name)
-        statement += ", ".join(columns)
-        statement += ";"
-
-        cursor = self.conn.cursor()
-        cursor.execute(statement)
+        for col in columns:
+            statement = '''ALTER TABLE {} ADD COLUMN {}'''.format(
+                self.table_name, col)
+            cursor = self.conn.cursor()
+            cursor.execute(statement)
 
         self.commit()
 
@@ -150,8 +158,3 @@ class Table():
 
     def commit(self):
         self.conn.commit()
-
-
-if __name__ == "__main__":
-    beneficiery = Table("beneficiery")
-    print(beneficiery.find_by_id())

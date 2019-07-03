@@ -150,6 +150,11 @@ class Table():
 
         self.commit()
 
+    def drop(self):
+        cursor = self.conn.cursor()
+        cursor.execute("DROP TABLE " + self.table_name)
+        self.commit()
+
     def __del__(self):
         self.close()
 

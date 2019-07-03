@@ -1,6 +1,8 @@
 import csv
 import re
 
+regex = re.compile(r"[^\w]", re.IGNORECASE)
+
 
 def read_csv(file_path=None) -> list:
     if file_path is None:
@@ -22,7 +24,6 @@ def read_csv(file_path=None) -> list:
 
 
 def clean(column):
-    regex = re.compile(r"[^\w]", re.IGNORECASE)
     cleaned = re.sub(regex, "", column)
 
     return cleaned.lower()

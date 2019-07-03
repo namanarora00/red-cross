@@ -4,8 +4,9 @@ from tkinter.filedialog import askopenfilename
 
 from utils import read_csv
 from meta import Table
+from admin_utils import initalize
 
-
+from barcode_util import generate_barcode
 from db import beneficiery
 
 
@@ -46,14 +47,30 @@ class Welcome(tk.Frame):
             self.skip_button.place(relx=0.417, rely=0.773,
                                    width=120, height=40)
 
+            self.generate_barcodes = ttk.Button(
+                self, text="barcodes", command=self._generate_barcodes)
+            self.generate_barcodes.place(relx=0.417, rely=0.9,
+                                         width=120, height=40)
+
         self.pack(fill=tk.BOTH, expand=1)
         self.update()
+
+        initalize()
 
     def _on_select_file(self):
         path_to_file = askopenfilename()
 
         if path_to_file:
             self.parse_file(path_to_file)
+
+    def _generate_barcodes(self):
+        benefs = beneficiery.find_by_id()
+        for b in benefs:
+            try:
+                # throws illegal character error if ID is not provided
+                generate_barcode(b[0])
+            except:
+                pass
 
     def parse_file(self, filepath):
 
@@ -74,6 +91,10 @@ class Welcome(tk.Frame):
             for row_dict in data:
                 if beneficiery.insert_row(row_dict):
                     print("inserted")
+                    try:
+                        generate_barcode(row_dict["id"])
+                    except:
+                        pass
                     inserted += 1
                 else:
                     duplicates += 1

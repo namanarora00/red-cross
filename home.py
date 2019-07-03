@@ -8,6 +8,7 @@ from tkinter import ttk, messagebox
 from db import item, beneficiery, distribution, distributed
 from gui_utils import *
 from item_select import SelectItem
+from tools import Tools
 
 
 class Home:
@@ -49,6 +50,7 @@ class Home:
         self.init_select_item_tree()
         self.init_distribution_tree()
         self.init_benef_dist_tree()
+        self.init_tools_frame()
 
     def init_select_item_tree(self):
         self.select_item_frame = tk.Frame(self.notebook)
@@ -57,6 +59,14 @@ class Home:
                           compound="left", underline="-1",)
 
         self.select_item_ref = SelectItem(self.select_item_frame)
+
+    def init_tools_frame(self):
+        self.tools_frame = tk.Frame(self.notebook)
+        self.notebook.add(self.tools_frame, padding=3)
+        self.notebook.tab(5, text="Tools",
+                          compound="left", underline="-1",)
+
+        self.tools_ref = Tools(self.tools_frame)
 
     def init_benef_tree(self):
         self.benef_frame = tk.Frame(self.notebook)
@@ -261,11 +271,12 @@ class Home:
         self.search_insert.configure(text='''Search or Insert''')
         self.search_insert.configure(width=250)
 
-        self.update = tk.Button(self.side_panel)
-        self.update.place(relx=0.060, rely=0.825, height=34,
-                          width=125, bordermode='ignore')
-        self.update.configure(text='''Update''')
-        self.update.configure(width=125)
+        self.update_button = tk.Button(
+            self.side_panel, command=self._update_item)
+        self.update_button.place(relx=0.060, rely=0.825, height=34,
+                                 width=125, bordermode='ignore')
+        self.update_button.configure(text='''update''')
+        self.update_button.configure(width=125)
 
         self.delete = tk.Button(self.side_panel, command=self._delete_item)
         self.delete.place(relx=0.515, rely=0.825, height=34,
@@ -275,8 +286,21 @@ class Home:
 
         self._show_items()
 
-    def __select(self, *args):
-        pass
+    def _update_item(self):
+        item_id = None
+        try:
+            item_id = self.item_tree.selection()[0]
+        except IndexError:
+            return
+
+        q = self.var_quantity.get()
+        if not q:
+            messagebox.showerror("Error", "Enter quantity")
+            return
+
+        item.execute(f"UPDATE item set quantity='{q}' where id='{item_id}'")
+
+        self.__update()
 
     def _show_items(self):
         data = item.find_by_id()

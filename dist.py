@@ -1,10 +1,11 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, simpledialog
 
 import sys
 
 import db
 from gui_utils import *
+from admin_utils import authenticate
 
 import random
 import string
@@ -179,7 +180,7 @@ class Distribution:
 
             for row in data:
                 self.dist_data_tree.insert(
-                    '', 'end', row[0]+row[1], values=tuple(row))
+                    '', 'end', row[0]+row[1]+row[3], values=tuple(row))
 
         except Exception:
             pass
@@ -201,8 +202,18 @@ class Distribution:
                 f"select * from distributed where bid='{benef}' and id='{self.d_id}' and item='{i}'  ")
 
             if d:
-                messagebox.showerror("error", "Already distributed")
-                return
+                password = simpledialog.askstring(
+                    "Admin!", "Distributing to a beneficary twice requires admin access")
+
+                if not password:
+                    messagebox.showerror("Error", "No password entered")
+                    return
+                print(password)
+                if not authenticate(password):
+                    messagebox.showerror("Error", "Invalid password")
+                    return
+
+                break
 
         for i in items:
 

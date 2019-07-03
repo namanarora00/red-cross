@@ -13,6 +13,11 @@
     pipenv run python3 main.py
 ```
 
+- If running on windows 
+```bash
+    pipenv run python main.py
+```
+
 ### To build the app
 
 - Install all the dependencies before continuing

@@ -130,4 +130,6 @@ dmypy.json
 # DB
 *.db
 
+# barcodes 
+bars
 

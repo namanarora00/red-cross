@@ -9,6 +9,8 @@ from db import item, beneficiery, distribution, distributed
 from gui_utils import *
 from item_select import SelectItem
 from tools import Tools
+from distribution_detail import DistributionDetail
+from benef_detail import BenefDetail
 
 
 class Home:
@@ -74,12 +76,20 @@ class Home:
         self.notebook.tab(1, text="Beneficiery",
                           compound="left", underline="-1",)
 
+        self.show_benef_detail_button = tk.Button(
+            self.benef_frame, command=self._show_benef_detail)
+        self.show_benef_detail_button.place(
+            relx=0.388, rely=0.008, height=34, width=235)
+        self.show_benef_detail_button.configure(
+            text='''Show selected Beneficiary''')
+        self.show_benef_detail_button.configure(width=235)
+
         columns = beneficiery._get_column_names()
         columns = [col.upper() for col in columns]
 
         self.benef_tree = ScrolledTreeView(self.benef_frame)
         self.benef_tree.place(
-            relx=0, rely=0.05, relheight=0.946, relwidth=1)
+            relx=0, rely=0.07, relheight=0.946, relwidth=1)
         self.benef_tree.configure(columns=columns)
         self.benef_tree.configure(show="headings")
 
@@ -92,15 +102,31 @@ class Home:
 
         self._show_benef()
 
+    def _show_benef_detail(self):
+        try:
+            benef = self.benef_tree.selection()[0]
+        except IndexError:
+            return
+
+        BenefDetail(benef).mainloop()
+
     def init_distribution_tree(self):
         self.dist_frame = tk.Frame(self.notebook)
         self.notebook.add(self.dist_frame, padding=3)
         self.notebook.tab(3, text="distributions",
                           compound="left", underline="-1",)
 
+        self.show_dist_detail_button = tk.Button(
+            self.dist_frame, command=self._show_dist_detail)
+        self.show_dist_detail_button.place(
+            relx=0.388, rely=0.008, height=34, width=235)
+        self.show_dist_detail_button.configure(
+            text='''Show selected Distribution''')
+        self.show_dist_detail_button.configure(width=235)
+
         self.dist_tree = ScrolledTreeView(self.dist_frame)
         self.dist_tree.place(
-            relx=0, rely=0.05, relheight=0.946, relwidth=1)
+            relx=0, rely=0.07, relheight=0.946, relwidth=1)
         columns = distribution._get_column_names()
 
         self.dist_tree.configure(columns=columns)
@@ -114,6 +140,16 @@ class Home:
             self.dist_tree.column(f"{i}", anchor="w")
 
         self._show_dist()
+
+    def _show_dist_detail(self):
+        try:
+            dist = self.dist_tree.selection()[0]
+        except IndexError:
+            return
+        # dist id is first 10 characters of an itemId as stored in the tree
+        dist_id = dist[:10]
+
+        DistributionDetail(dist_id).mainloop()
 
     def _show_dist(self):
         data = distribution.find_by_id()

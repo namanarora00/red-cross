@@ -85,7 +85,7 @@ class Table():
 
         return True
 
-    def find_by_id(self, id_=None):
+    def find_by_id(self, id_=None, many=False):
 
         if id_ is None:
             statement = f'''SELECT * FROM {self.table_name}'''
@@ -99,7 +99,10 @@ class Table():
         cursor = self.conn.cursor()
         cursor.execute(statement)
 
-        res = cursor.fetchone()
+        if many:
+            res = cursor.fetchall()
+        else:
+            res = cursor.fetchone()
 
         return res
 

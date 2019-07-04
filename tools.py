@@ -38,11 +38,11 @@ class Tools():
         self.generate_barcode_button.configure(text='''Barcodes''')
         self.generate_barcode_button.configure(width=205)
 
-        self.generate_report_button = tk.Button(self.parent)
-        self.generate_report_button.place(
-            relx=0.568, rely=0.215, height=34, width=205)
-        self.generate_report_button.configure(text='''Reports''')
-        self.generate_report_button.configure(width=205)
+        # self.generate_report_button = tk.Button(self.parent)
+        # self.generate_report_button.place(
+        #     relx=0.568, rely=0.215, height=34, width=205)
+        # self.generate_report_button.configure(text='''Reports''')
+        # self.generate_report_button.configure(width=205)
 
         self.new_password_entry = tk.Entry(
             self.parent, textvariable=self.new_var)

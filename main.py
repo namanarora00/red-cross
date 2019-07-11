@@ -4,6 +4,10 @@ import sqlite3
 from windows.start import Welcome
 from windows.home import Home
 
+from tkinter import Image
+
+# to avoid hidden import in pyinstaller
+import PIL
 
 class Main(tk.Tk):
     '''

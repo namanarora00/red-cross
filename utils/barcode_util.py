@@ -1,21 +1,21 @@
 from fpdf import FPDF
-import barcode
-from barcode.writer import ImageWriter
+import code128
 import os
 
+import PIL.Image
+import PIL.ImageTk
+
 # Use Code-128 barcode type
-
-C128 = barcode.get_barcode_class('code128')
-
 
 def generate_barcode(ID: str):
     try:
         os.mkdir("bars")
     except FileExistsError:
         pass
-
-    b = C128(ID, writer=ImageWriter())
-    b.save("bars/" + ID)
+    finally:
+        # saves barcodes
+        code128.image(ID).save(f"bars/{ID}.png")
+        print("made barcode")
 
 
 def to_pdf():
@@ -38,3 +38,4 @@ def to_pdf():
 
 if __name__ == "__main__":
     generate_barcode("100")
+

@@ -15,7 +15,6 @@ def generate_barcode(ID: str):
     finally:
         # saves barcodes
         code128.image(ID).save(f"bars/{ID}.png")
-        print("made barcode")
 
 
 def to_pdf():
@@ -30,8 +29,7 @@ def to_pdf():
         print(os.listdir("bars"))
 
     for i, image in enumerate(images):
-        if i % 2 == 0:
-            pdf.add_page()
+        pdf.add_page()
         pdf.image(os.path.join("bars", image), )
     pdf.output("barcodes.pdf", "F")
 

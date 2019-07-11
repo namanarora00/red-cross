@@ -28,9 +28,14 @@ def to_pdf():
     except FileNotFoundError:
         print(os.listdir("bars"))
 
+    y = 0
+
     for i, image in enumerate(images):
-        pdf.add_page()
-        pdf.image(os.path.join("bars", image), )
+        if(i%6==0):
+            pdf.add_page()
+            y = 0
+        pdf.image(os.path.join("bars", image), y=y)
+        y += 50
     pdf.output("barcodes.pdf", "F")
 
 

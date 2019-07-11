@@ -91,6 +91,8 @@ class Welcome(tk.Frame):
 
             for row_dict in data:
                 if beneficiery.insert_row(row_dict):
+                    self.parent.update_idletasks()
+                    self.parent.update()
                     print("inserted")
                     try:
                         generate_barcode(row_dict["id"])

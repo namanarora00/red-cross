@@ -1,4 +1,6 @@
-from meta import Table
+# This module initalizes all the tables in the database
+
+from .table import Table
 
 TABLES = []
 

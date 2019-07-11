@@ -3,9 +3,9 @@ from tkinter import ttk, messagebox, simpledialog
 
 import sys
 
-import db
-from gui_utils import *
-from admin_utils import authenticate
+from db import db
+from utils.gui_utils import *
+from utils.admin_utils import authenticate
 
 import random
 import string

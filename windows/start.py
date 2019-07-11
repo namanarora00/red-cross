@@ -2,12 +2,11 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from tkinter.filedialog import askopenfilename
 
-from utils import read_csv
-from meta import Table
-from admin_utils import initalize
+from utils.utils import read_csv
+from utils.admin_utils import initalize
+from utils.barcode_util import generate_barcode
 
-from barcode_util import generate_barcode
-from db import beneficiery
+from db.db import beneficiery
 
 
 class Welcome(tk.Frame):

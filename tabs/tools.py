@@ -3,10 +3,10 @@ from tkinter import ttk, messagebox
 
 import sys
 
-from db import TABLES, beneficiery
-from gui_utils import *
-from admin_utils import authenticate, add_admin
-from barcode_util import generate_barcode
+from db.db import TABLES, beneficiery
+from utils.gui_utils import *
+from utils.admin_utils import authenticate, add_admin
+from utils.barcode_util import generate_barcode
 
 
 class Tools():

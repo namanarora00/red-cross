@@ -1,5 +1,5 @@
 from hashlib import sha256
-from db import admin
+from db.db import admin
 
 DEFAULT_PASSWORD = "12345"
 

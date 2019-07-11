@@ -112,7 +112,7 @@ class Table():
         if id_ is None:
             cursor.execute(f"delete from {self.table_name}")
             return True
-        cursor.execute(f"DELETE FROM {self.table_name} WHERE id={id_}")
+        cursor.execute(f"DELETE FROM {self.table_name} WHERE id='{id_}'")
 
         self.commit()
 

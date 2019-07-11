@@ -3,9 +3,9 @@ from tkinter import ttk, messagebox
 
 import sys
 
-from db import *
-from gui_utils import *
-from dist import Distribution
+from db.db import *
+from utils.gui_utils import *
+from windows.distribution import Distribution
 
 
 class SelectItem():

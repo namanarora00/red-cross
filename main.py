@@ -1,8 +1,8 @@
 import tkinter as tk
 import sqlite3
 
-from start import Welcome
-from home import Home
+from windows.start import Welcome
+from windows.home import Home
 
 
 class Main(tk.Tk):
@@ -12,11 +12,6 @@ class Main(tk.Tk):
 
     def __init__(self, frames=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        if frames is None:
-            self.frames = []
-        else:
-            self.frames = frames
 
         self.title("Application")
         self.geometry("600x600")
@@ -29,6 +24,9 @@ class Main(tk.Tk):
         self.update()
 
     def next_frame(self, frame=None, *args, **kwargs):
+        '''
+            Changes frame to the given frame if provided. Else goes to the `Home frame`
+        '''
         self.current_frame.destroy()
         if frame is None:
             self.current_frame = Home(self)
@@ -45,8 +43,3 @@ class Main(tk.Tk):
 if __name__ == "__main__":
     window = Main()
     window.mainloop()
-
-
-# TODO:
-#       Thumbnails if links available in csv
-#

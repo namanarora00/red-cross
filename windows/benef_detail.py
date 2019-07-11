@@ -2,8 +2,8 @@ from datetime import datetime
 import tkinter as tk
 from tkinter import messagebox
 
-from gui_utils import *
-from db import beneficiery, distributed
+from utils.gui_utils import *
+from db.db import beneficiery, distributed
 
 
 class BenefDetail(tk.Tk):

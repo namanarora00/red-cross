@@ -2,8 +2,8 @@ from datetime import datetime
 import tkinter as tk
 from tkinter import messagebox
 
-from gui_utils import *
-from db import distributed, distribution
+from utils.gui_utils import *
+from db.db import distributed, distribution
 
 
 class DistributionDetail(tk.Tk):

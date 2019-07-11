@@ -7,8 +7,8 @@ TABLES = []
 
 item = Table("item")
 beneficiery = Table("beneficiery")
-distribution = Table("distribution")
-distributed = Table("distributed")
+distribution = Table("distribution")    # A distribution
+distributed = Table("distributed")  # beneficiary item distribution data
 admin = Table("admin")
 
 

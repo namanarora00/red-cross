@@ -2,6 +2,10 @@ import sqlite3
 
 
 class Table():
+    '''
+        Table class for making tables in the database and interaction.
+    '''
+
     def __init__(self, table_name, db_name="cross.db"):
         self.db_name = db_name
         self.table_name = table_name
@@ -11,6 +15,9 @@ class Table():
         return sqlite3.connect(self.db_name)
 
     def exists(self) -> bool:
+        '''
+            Returns true if table exists in the database
+        '''
         cursor = self.conn.cursor()
 
         cursor.execute(
@@ -20,7 +27,12 @@ class Table():
 
         return cursor.fetchone()[0] == 1
 
-    def init_table(self,  columns) -> None:
+    def init_table(self, columns) -> None:
+        '''
+            Create table using the given columns.
+            If table exists then adds columns not present in th table which are
+            provided.
+        '''
         if self.exists():
             update = self._diff(columns)
             if update:
@@ -43,6 +55,11 @@ class Table():
         print("Table created!")
 
     def insert_row(self, row: dict, force=False) -> bool:
+        '''
+            Insert row in table. If the row exists and force is False
+            does not add the row. A row is identified by its ID attribute (Primary Key).
+            It is not explicitly defined as a primary key but it acts like one.
+        '''
 
         id_ = row.get("id", None)
 
@@ -64,6 +81,7 @@ class Table():
         for col in cols:
             column_statement += f"{col}, "
 
+            # if field is empty adds dashes instead
             val = row.get(col, "---").strip()
 
             if not len(val):
@@ -77,6 +95,7 @@ class Table():
         column_statement += ")"
         value_statement += ")"
 
+        # SQL statement to add column
         statement += column_statement + " "
         statement += value_statement
 
@@ -86,6 +105,11 @@ class Table():
         return True
 
     def find_by_id(self, id_=None, many=False):
+        '''
+            Finds a row in the table by the given ID. if id is none
+            return all the rows. If many exists with the same ID, many param must be True
+            else returns only the first row.
+        '''
 
         if id_ is None:
             statement = f'''SELECT * FROM {self.table_name}'''
@@ -100,6 +124,9 @@ class Table():
         cursor.execute(statement)
 
         if many:
+            # In distributed table the ID attribute repesents
+            # distribution ID and has multiple rows. Hence this
+            # workaround is required instead of using a Composite Key attribute.
             res = cursor.fetchall()
         else:
             res = cursor.fetchone()
@@ -107,7 +134,10 @@ class Table():
         return res
 
     def delete_by_id(self, id_=None):
-
+        '''
+            Deletes row identified by the ID.
+            If ID is none deletes all
+        '''
         cursor = self.conn.cursor()
         if id_ is None:
             cursor.execute(f"delete from {self.table_name}")
@@ -128,12 +158,19 @@ class Table():
         return names
 
     def _diff(self, columns) -> list:
+        '''
+            returns columns present in the columns parameter and
+            not in the database
+        '''
         in_table = self._get_column_names()
         d = list(set(columns) - set(in_table))
 
         return d
 
     def execute(self, statement: str):
+        '''
+            Executes a raw statement as provided
+        '''
         cursor = self.conn.cursor()
         cursor.execute(statement)
 
@@ -143,6 +180,9 @@ class Table():
             return cursor.fetchall()
 
     def add_columns(self, columns) -> None:
+        '''
+            Adds given columns to the table
+        '''
         columns = ["{} TEXT".format(col) for col in columns]
 
         for col in columns:

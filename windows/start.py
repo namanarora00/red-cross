@@ -4,7 +4,7 @@ from tkinter.filedialog import askopenfilename
 
 from utils.utils import read_csv
 from utils.admin_utils import initalize
-from utils.barcode_util import generate_barcode
+from utils.barcode_util import generate_barcode, to_pdf
 
 from db.db import beneficiery
 
@@ -70,6 +70,8 @@ class Welcome(tk.Frame):
                 generate_barcode(b[0])
             except:
                 pass
+
+        to_pdf()
 
     def parse_file(self, filepath):
 

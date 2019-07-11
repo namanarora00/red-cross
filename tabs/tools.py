@@ -6,7 +6,7 @@ import sys
 from db.db import TABLES, beneficiery
 from utils.gui_utils import *
 from utils.admin_utils import authenticate, add_admin
-from utils.barcode_util import generate_barcode
+from utils.barcode_util import generate_barcode, to_pdf
 
 
 class Tools():
@@ -107,5 +107,6 @@ class Tools():
                 generate_barcode(b[0])
             except:
                 pass
+        to_pdf()
         messagebox.showinfo(
             "Info", "Generated Barcodes successfully. Find them in `bars` directory")
